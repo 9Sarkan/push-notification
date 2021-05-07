@@ -1,0 +1,66 @@
+version: "3.7"
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - 6379:6379
+    networks:
+      - sporty
+    volumes:
+      - "sporty_redis:/data"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "18182:15672"
+    networks:
+      - sporty
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+    environment:
+      - RABBITMQ_DEFAULT_USER_FILE=/run/secrets/rabbitmq-user
+      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/rabbitmq-passwd
+    secrets:
+      - rabbitmq-user
+      - rabbitmq-passwd
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+
+  sporty-websocket:
+    image: "sporty-websocket:latest"
+    secrets:
+      - rabbitmq-user
+      - rabbitmq-passwd
+    networks:
+      - sporty
+    env_file: ../../source/.env
+    depends_on:
+      - redis
+      - rabbitmq
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+
+networks:
+  sporty:
+    # driver: overlay
+
+volumes:
+  sporty_redis:
+    external: true
+  rabbitmq_data:
+    external: true
+
+secrets:
+  rabbitmq-user:
+    external: true
+  rabbitmq-passwd:
+    external: true

@@ -1,0 +1,22 @@
+{
+    "name": "node_websocket",
+    "version": "1.0.0",
+    "description": "web socket for notifications",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
+    },
+    "keywords": [
+        "websocket",
+        "nodejs",
+        "rabbitmq"
+    ],
+    "author": "Cnili",
+    "license": "UNLICENSED",
+    "dependencies": {
+        "amqplib": "^0.5.5",
+        "redis": "^3.0.2",
+        "ws": "^7.2.1"
+    }
+}
